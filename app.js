@@ -15,30 +15,57 @@ document.getElementById('style-image').addEventListener('change', (e) => {
 
 // Load TensorFlow.js model
 async function loadModel() {
-  styleNet = await tf.loadGraphModel(
-    'https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2',
-    { fromTFHub: true }
-  );
-  console.log('Model loaded.');
+  try {
+    styleNet = await tf.loadGraphModel(
+      'https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2',
+      { fromTFHub: true }
+    );
+    console.log('Model loaded successfully.');
+  } catch (error) {
+    console.error('Error loading the model:', error);
+    alert('Failed to load the model. Please check your internet connection and try again.');
+  }
 }
 
 async function applyStyleTransfer() {
-  if (!styleNet) {
-    await loadModel();
-  }
+  try {
+    if (!contentImage.src || !styleImage.src) {
+      alert('Please select both content and style images first.');
+      return;
+    }
+
+    if (!styleNet) {
+      console.log('Loading model...');
+      await loadModel();
+    }
+
+    if (!styleNet) {
+      throw new Error('Model failed to load');
+    }
 
   const contentTensor = tf.browser.fromPixels(contentImage).toFloat().expandDims();
   const styleTensor = tf.browser.fromPixels(styleImage).toFloat().expandDims();
 
-  const result = await styleNet.executeAsync({
-    'content_image': contentTensor,
-    'style_image': styleTensor
-  });
+    console.log('Processing images...');
+    const result = await styleNet.executeAsync({
+      'content_image': contentTensor,
+      'style_image': styleTensor
+    });
 
-  await tf.browser.toPixels(result[0].squeeze(), outputCanvas);
+    console.log('Rendering result...');
+    await tf.browser.toPixels(result[0].squeeze(), outputCanvas);
+    console.log('Style transfer complete!');
 
-  // Cleanup tensors
-  tf.dispose([contentTensor, styleTensor, result]);
+    // Cleanup tensors
+    tf.dispose([contentTensor, styleTensor, result]);
+  } catch (error) {
+    console.error('Error during style transfer:', error);
+    alert('An error occurred during style transfer. Please try again.');
+  }
 }
 
-loadModel();
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Application started');
+  loadModel();
+});
