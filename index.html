@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Neural Style Transfer with TensorFlow.js</title>
+</head>
+<body>
+  <h1>Neural Style Transfer (TF.js)</h1>
+  
+  <input type="file" id="content-image" accept="image/*">
+  <input type="file" id="style-image" accept="image/*">
+  <br><br>
+  
+  <button onclick="applyStyleTransfer()">Apply Style Transfer</button>
+  
+  <h3>Content Image:</h3>
+  <img id="content-preview" width="250">
+  
+  <h3>Style Image:</h3>
+  <img id="style-preview" width="250">
+  
+  <h3>Stylized Result:</h3>
+  <canvas id="output-canvas" width="250" height="250"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.19.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/style-transfer"></script>
+  <script src="app.js"></script>
+</body>
+</html>
